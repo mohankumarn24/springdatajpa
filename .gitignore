@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+## ignore changes to below folders
+udemynotes/udemynotes-springdatajpa
+udemynotes/udemynotes-springdatajpausinghibernate
