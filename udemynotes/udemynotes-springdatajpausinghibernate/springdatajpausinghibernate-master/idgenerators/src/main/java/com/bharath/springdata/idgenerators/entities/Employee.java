@@ -83,7 +83,7 @@ INSERT INTO id_generator (gen_name, gen_val) VALUES ('user_id', 1);
 
 gen_name → Holds the sequence name (user_id in our example). Acts as the primary key.
 gen_val → Holds the next ID value to be assigned.
-When JPA inserts a new User, it reads gen_val, uses it as id, then increments gen_val in this table as specified by allocationSize (100 (initial), 200, 300, 400...)
+When JPA inserts a new Employee, it reads gen_val, uses it as id, then increments gen_val in this table as specified by allocationSize (1 (initial), 100, 200, 300, 400...)
 
 Sample values:
 ---------------         --------------
