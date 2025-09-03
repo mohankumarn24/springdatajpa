@@ -1,6 +1,7 @@
 package com.bharath.springdata.product.repos;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.bharath.springdata.product.entities.Product;
@@ -26,6 +27,16 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
 
 	List<Product> findByIdIn(List<Integer> ids,Pageable pageable);
 
+	// call stored procedures
+	@Query(value="CALL GetAllProducts", nativeQuery = true)
+	List<Product> findAllProducts();
+	
+	@Query(value="CALL GetAllProductsByPrice (:price_in)", nativeQuery = true)
+	List<Product> findAllProductsByPrice(double price_in);
+	
+	@Query(value="CALL GetAllProductsByPrice (:price_in)", nativeQuery = true)
+	int findAllProductsCountByPrice(double price_in);
+
 }
 
 /*
@@ -40,4 +51,35 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
 
   	...
    }
-  */
+*/
+
+/*
+	create stored procedures:
+
+	select * from product;
+
+	DELIMITER //
+
+	CREATE PROCEDURE GetAllProducts()
+	BEGIN
+		SELECT *  FROM product;
+	END //
+
+	DELIMITER //
+
+	CREATE PROCEDURE GetAllProductsByPrice(IN price_in decimal)
+	BEGIN
+		SELECT *  FROM product where price>price_in;
+	END //
+
+	DELIMITER //
+
+	CREATE PROCEDURE GetAllProductsCountByPrice(IN price_in decimal)
+	BEGIN
+		SELECT count(*)  FROM product where price>price_in;
+	END //
+
+	drop procedure GetAllProducts;
+	drop procedure GetAllProductsByPrice;
+	drop procedure GetAllProductsCountByPrice;
+*/

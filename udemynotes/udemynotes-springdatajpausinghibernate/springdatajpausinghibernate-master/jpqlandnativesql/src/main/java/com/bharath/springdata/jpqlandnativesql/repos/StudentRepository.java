@@ -25,7 +25,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 	@Query("from Student where score>:min and score<:max")
 	List<Student> findStudentsForGivenScores(@Param("min") int min, @Param("max") int max);
 
-	@Modifying
+	@Modifying // use @Modifying in repo layer and @Transactional in service layer for update, delete operations
 	@Query("delete from Student where firstName=:firstName")
 	void deleteStudentsByFirstName(@Param("firstName") String firstName); // :firstName
 
