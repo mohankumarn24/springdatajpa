@@ -21,6 +21,7 @@ public class HibernateinheritanceApplicationTests {
 	public void contextLoads() {
 	}
 
+	// same test valid for all inheritance types [SINGLE_TABLE, TABLE_PER_CLASS, JOINED]
 	@Test
 	public void createPayment() {
 		CreditCard cc = new CreditCard();
@@ -30,6 +31,7 @@ public class HibernateinheritanceApplicationTests {
 		repository.save(cc);
 	}
 
+	// same test valid for all inheritance types [SINGLE_TABLE, TABLE_PER_CLASS, JOINED]
 	@Test
 	public void createCheckPayment() {
 		Check ch = new Check();

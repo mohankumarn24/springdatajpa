@@ -1,8 +1,15 @@
 package com.bharath.springdata.hibernateinheritance.entities;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+
+// @Entity
+// @DiscriminatorValue("ch")
+
+// @Entity
+// @Table(name="bankcheck")
 
 @Entity
 @Table(name = "bankcheck")
