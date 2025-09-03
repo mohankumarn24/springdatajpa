@@ -15,7 +15,7 @@ public class Product implements Serializable {
 	@Id
 	private int id;
 	private String name;
-	@Column(name = "description")
+	@Column(name = "description") 					// @Column(name = "description", nullable = false, unique = true)
 	private String desc;
 	private Double price;
 

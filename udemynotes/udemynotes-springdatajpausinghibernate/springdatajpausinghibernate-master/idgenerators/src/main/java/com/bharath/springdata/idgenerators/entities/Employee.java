@@ -10,6 +10,7 @@ import javax.persistence.TableGenerator;
 import org.hibernate.annotations.GenericGenerator;
 
 // https://chatgpt.com/share/68b73cb4-4c20-8004-8126-41d0922cc656
+// https://chatgpt.com/share/68b7c3ae-e1f0-8004-9eb6-cabfab77b53f
 @Entity
 public class Employee {
 
@@ -21,8 +22,8 @@ public class Employee {
 
 	// @Id
     // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_gen")
-    // @SequenceGenerator(name = "employee_gen", sequenceName = "emp_id_seq", allocationSize = 1)
-	// CREATE SEQUENCE emp_id_seq START 1; -- create sequence in postgreSQL
+    // @SequenceGenerator(name = "employee_gen", sequenceName = "emp_id_seq", initialValue = 1, allocationSize = 1)
+	// CREATE SEQUENCE emp_id_seq START 1; -- create sequence in postgreSQL (sometimes automatically created by hibernate)
 	
 	// @Id
 	// @GeneratedValue(strategy = GenerationType.TABLE, generator="employee_gen")
@@ -105,4 +106,13 @@ When you insert a new Employee, JPA:
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@GeneratedValue(strategy = GenerationType.TABLE)
+*/
+/*
+
+| Strategy   | Description                                                | PostgreSQL Behavior                                                                        |
+| ---------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `AUTO`     | JPA chooses the strategy based on the database dialect.    | Often defaults to `SEQUENCE` for PostgreSQL.                                               |
+| `IDENTITY` | Uses **database auto-increment** column.                   | Maps to `SERIAL` or `BIGSERIAL` in PostgreSQL. The database generates the value on insert. |
+| `SEQUENCE` | Uses a database **sequence** object.                       | Recommended for PostgreSQL. You can define a custom sequence with `@SequenceGenerator`.    |
+| `TABLE`    | Uses a separate **table** to simulate sequence generation. | Works but less efficient than `SEQUENCE`.                                                  |
 */
