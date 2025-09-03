@@ -38,6 +38,7 @@ public class AssociationsApplicationTests {
 	public void contextLoads() {
 	}
 
+	// OneToMany: save new data
 	@Test
 	public void testCreateCustomer() {
 
@@ -52,40 +53,61 @@ public class AssociationsApplicationTests {
 		ph2.setNumber("0987654321");
 		ph2.setType("home");
 
+		/* NOT A BETTER WAY
+		// if below 2 lines are not added: entries will be added to customers and phone_numbers table. But but foreign key column value in phone_number table will be null
+		ph1.setCustomer(customer);
+		ph2.setCustomer(customer);
+
+		HashSet<PhoneNumber> numbers = new HashSet<>();
+		numbers.add(ph1);
+		numbers.add(ph2);
+		customer.setNumbers(numbers);
+		*/
+
+		// BETTER WAY
 		customer.addPhoneNumber(ph1);
 		customer.addPhoneNumber(ph2);
 
 		repository.save(customer);
 	}
 
+	// OneToMany: read data
 	@Test
-	@Transactional
+	@Transactional // needed if LAZY loading is enabled
 	public void testLoadCustomer() {
 		Customer customer = repository.findById(4L).get();
 		System.out.println(customer.getName());
 
-		Set<PhoneNumber> numbers = customer.getNumbers();
+		Set<PhoneNumber> numbers = customer.getNumbers(); // in lazy loading, phone_numbers will be fetched only if we call getNumbers() method. Uses separate sql query
 		numbers.forEach(number -> System.out.println(number.getNumber()));
 
+		// EAGER: Single SQL query with inner joins to get customer data and phone number data
+		// LAZY: First query to get customer data. Second query with inner join to get phone numbers when we invoke customer.getNumbers()
 	}
 
+	// OneToMany: update data
 	@Test
 	public void testUpdateCustomer() {
 		Customer customer = repository.findById(4L).get();
 		customer.setName("John Bush");
 
 		Set<PhoneNumber> numbers = customer.getNumbers();
-		numbers.forEach(number -> number.setType("cell"));
+		numbers.forEach(number -> number.setType("cell"));   
+		// Hibernate does Dirty Check
+		// Since we have two numbers with values 'cell' and 'home', only one update query is generated to update 'cell' -> 'home' as other number already has 'cell' value
 
 		repository.save(customer);
 
 	}
 
+	// OneToMany: delete data
 	@Test
 	public void testDelete() {
 		repository.deleteById(4l);
+		// deletes 2 associated phone numbers and then deletes customer (3 sql queries generated)
 	}
 
+	// ManyToMany: create data
 	@Test
 	public void testmtomCreateProgrammer() {
 		Programmer programmer = new Programmer();
@@ -100,16 +122,20 @@ public class AssociationsApplicationTests {
 		programmer.setProjects(projects);
 
 		programmerRepository.save(programmer);
+
+		// 3 sql queries: programmer table, project table, programmer_project table insert queries
 	}
 
+	// ManyToMany: get data
 	@Test
-	@Transactional
+	@Transactional	// needed if LAZY loading is enabled
 	public void testmtomFindProgrammer() {
 		Programmer programmer = programmerRepository.findById(1).get();
-		System.out.println(programmer);
-		System.out.println(programmer.getProjects());
+		System.out.println(programmer);					// Programmer [id=1, name=John, sal=10000]
+		System.out.println(programmer.getProjects());	// Project [id=1, name=Hibernate Project]
 	}
 
+	// OneToOne: create data
 	@Test
 	public void testOneToOneCreateLicense() {
 		License license = new License();

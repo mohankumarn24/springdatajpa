@@ -22,8 +22,10 @@ public class Programmer {
 	private String name;
 	@Column(name = "salary")
 	private int sal;
-	@ManyToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
-	@JoinTable(name = "programmers_projects", joinColumns = @JoinColumn(name = "programmer_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"))
+	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinTable(name = "programmers_projects", 
+		joinColumns = @JoinColumn(name = "programmer_id", referencedColumnName = "id"), 
+		inverseJoinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"))
 	private Set<Project> projects;
 
 	public int getId() {
@@ -64,3 +66,51 @@ public class Programmer {
 	}
 
 }
+/*
+1. SQL Scripts:
+	use mydb;
+
+	create table programmer(
+		id int PRIMARY KEY AUTO_INCREMENT,
+		name varchar(20),
+		salary int
+	);
+
+	create table project(
+		id int PRIMARY KEY AUTO_INCREMENT,
+		name varchar(20)
+	);
+
+	create table programmers_projects(
+		programmer_id int,
+		project_id int,
+		FOREIGN KEY (programmer_id) REFERENCES programmer(id),
+		FOREIGN KEY (project_id) REFERENCES project(id)
+	);
+
+	select * from programmer;
+	select * from project;
+	select * from programmers_projects;
+
+2. Sample Data:
+	programmer:
+	------------------
+	id 	name 	salary
+	------------------
+	1	John	1000
+	------------------
+
+	project:
+	---------------------
+	id 	name
+	---------------------
+	1	Hibernate Project
+	---------------------
+
+	programmers_projects
+	--------------------------
+	programmer_id	project_id
+	--------------------------
+	1				1
+	--------------------------
+*/
