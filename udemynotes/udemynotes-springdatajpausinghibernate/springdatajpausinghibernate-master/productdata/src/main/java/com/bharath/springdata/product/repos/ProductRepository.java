@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface ProductRepository extends PagingAndSortingRepository<Product, Integer> {
 
+	// spring data finder methods
+	// define abstract method and query is auto-generated
+	// https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
 	List<Product> findByName(String name);
 
 	List<Product> findByNameAndDesc(String name, String desc);
@@ -29,3 +32,12 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
 	interface StudentRepository extends CrudRepository<Student, Long>
 	- This will generate default methods:  save(), findById(), findAll(), deleteById()
  */
+
+ /*
+  * From Spring Boot 3.0.2 and onwards we need to extend both CrudReposity and PagingAndSortingRepository for Pagination support
+  
+  public interface ProductRepository extends CrudRepository<Product, Integer> ,PagingAndSortingRepository<Product, Integer> {
+
+  	...
+   }
+  */

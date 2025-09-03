@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -117,6 +118,7 @@ public class ProductdataApplicationTests {
 		products.forEach(p -> System.out.println(p.getName()));
 	}
 
+	// test pagination on custom finder method: List<Product> findByIdIn(List<Integer> ids,Pageable pageable);
 	@Test
 	public void testFindByIdsIn() {
 		// Pageable pageable = new PageRequest(0, 2);
@@ -125,28 +127,35 @@ public class ProductdataApplicationTests {
 		products.forEach(p -> System.out.println(p.getName()));
 	}
 
+	// pagination
 	@Test
 	public void testFindAllPaging() {
-		Pageable pageable = PageRequest.of(0, 2);
+		Pageable pageable = PageRequest.of(0, 2); // get 2 records from first page
 		Iterable<Product> results = repository.findAll(pageable);
+		// Page<Product> results = repository.findAll(pageable);
 		results.forEach(p -> System.out.println(p.getName()));
 
 	}
 
+	// sorting
 	@Test
 	public void testFindAllSorting() {
+		// sort by multiple properties
 		repository.findAll(Sort.by(new Sort.Order(Direction.DESC, "name"), new Sort.Order(null, "price")))
 				.forEach(p -> System.out.println(p.getName()));
 
-		// repository.findAll(Sort.by("name", "price")).forEach(p ->
-		// System.out.println(p.getName()));
+		// sort by single property
+		// repository.findAll(Sort.by("name", "price")).forEach(p -> System.out.println(p.getName()));
 
 	}
 
+	// pagination and sorting
 	@Test
 	public void testFindAllPagingAndSorting() {
 		Pageable pageable = PageRequest.of(0, 2, Direction.DESC, "name");
 		repository.findAll(pageable).forEach(p -> System.out.println(p.getName()));
+
+		// Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending().and(Sort.by("email").descending()));
 
 	}
 
