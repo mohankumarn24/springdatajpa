@@ -1,7 +1,7 @@
 package com.bharath.springdata.product;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,11 +9,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bharath.springdata.product.entities.Product;
 import com.bharath.springdata.product.repos.ProductRepository;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class ProductdataApplicationTests {
 
@@ -118,7 +115,6 @@ public class ProductdataApplicationTests {
 		products.forEach(p -> System.out.println(p.getName()));
 	}
 
-	// test pagination on custom finder method: List<Product> findByIdIn(List<Integer> ids,Pageable pageable);
 	@Test
 	public void testFindByIdsIn() {
 		// Pageable pageable = new PageRequest(0, 2);
@@ -127,66 +123,43 @@ public class ProductdataApplicationTests {
 		products.forEach(p -> System.out.println(p.getName()));
 	}
 
-	// pagination
 	@Test
 	public void testFindAllPaging() {
-		Pageable pageable = PageRequest.of(0, 2); // get 2 records from first page
+		Pageable pageable = PageRequest.of(0, 2);
 		Iterable<Product> results = repository.findAll(pageable);
-		// Page<Product> results = repository.findAll(pageable);
 		results.forEach(p -> System.out.println(p.getName()));
 
 	}
 
-	// sorting
 	@Test
 	public void testFindAllSorting() {
-		// sort by multiple properties
 		repository.findAll(Sort.by(new Sort.Order(Direction.DESC, "name"), new Sort.Order(null, "price")))
 				.forEach(p -> System.out.println(p.getName()));
 
-		// sort by single property
-		// repository.findAll(Sort.by("name", "price")).forEach(p -> System.out.println(p.getName()));
+		// repository.findAll(Sort.by("name", "price")).forEach(p ->
+		// System.out.println(p.getName()));
 
 	}
 
-	// pagination and sorting
 	@Test
 	public void testFindAllPagingAndSorting() {
 		Pageable pageable = PageRequest.of(0, 2, Direction.DESC, "name");
 		repository.findAll(pageable).forEach(p -> System.out.println(p.getName()));
 
-		// Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending().and(Sort.by("email").descending()));
-
 	}
 
-	// Level 1 Cache
-	/*
-	 * Level 1 Cache:
-	 * - Objects are cached at Hibernate Session level
-	 * - Enabled by default
-	 * - Session and SessionFactory are lower level Hiberate objects which are internally used by Hibernate
-	 * - L1 Cache: Each session will have its own cache
-	 * 
-	 * Level 2 Cache:
-	 * - Objects are cached at Hibernate SessionFactory level (cached objects are shared across different Hibernate sessions)
-	 * - additional configuration required
-	 * - Multiple sessions will share common cache
-	 */
 	@Test
-	@Transactional 	// needed to enable L1 Cache
+	@Transactional
 	public void testCaching() {
-
-		/* without cache evict. 1 select query generated
-		repository.findById(1); // reads value from db
-		repository.findById(1); // reads value from L1 Cache
-		*/
-
-		// with cache evict. 2 select queries generated
-		// entityManager is needed for cache evict
 		Session session = entityManager.unwrap(Session.class);
 		Product product = repository.findById(1).get();
+
 		repository.findById(1).get();
+
 		session.evict(product);
+
 		repository.findById(1).get();
+
 	}
+
 }
