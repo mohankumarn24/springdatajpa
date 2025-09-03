@@ -38,3 +38,28 @@ public class Employee {
 	}
 
 }
+
+/*
+1. SQL:
+	use mydb;
+
+	create table employee(
+		id int,
+		name varchar(20),
+		streetaddress varchar(30),
+		city varchar(20),
+		state varchar(20),
+		zipcode varchar(20),
+		country varchar(20)
+	);
+
+	select * from employee;
+
+2. Sample data:
+	employee:
+	-------------------------------------------------------------------------
+	id		name		streetaddress		city	state	zipcode	  country
+	-------------------------------------------------------------------------
+	123		Bharath		Spicewood Springs	Austin	TEXAS	78750	  USA
+	-------------------------------------------------------------------------
+*/
