@@ -56,6 +56,20 @@ public class Product implements Serializable {
 	}
 }
 
+	// Level 1 Cache
+	/*
+	 * Level 1 Cache:
+	 * - Objects are cached at Hibernate Session level
+	 * - Enabled by default
+	 * - Session and SessionFactory are lower level Hiberate objects which are internally used by Hibernate
+	 * - L1 Cache: Each session will have its own cache
+	 * 
+	 * Level 2 Cache:
+	 * - Objects are cached at Hibernate SessionFactory level (cached objects are shared across different Hibernate sessions)
+	 * - additional configuration required
+	 * - Multiple sessions will share common cache
+	 */
+	
 /*
 Level 2 Cache:
 - Objects are cached at Hibernate SessionFactory level (cached objects are shared across different Hibernate sessions)

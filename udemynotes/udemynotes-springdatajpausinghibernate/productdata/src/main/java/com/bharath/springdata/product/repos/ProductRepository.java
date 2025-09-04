@@ -34,7 +34,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
 	@Query(value="CALL GetAllProductsByPrice (:price_in)", nativeQuery = true)
 	List<Product> findAllProductsByPrice(double price_in);
 	
-	@Query(value="CALL GetAllProductsByPrice (:price_in)", nativeQuery = true)
+	@Query(value="CALL GetAllProductsCountByPrice (:price_in)", nativeQuery = true)
 	int findAllProductsCountByPrice(double price_in);
 
 }
