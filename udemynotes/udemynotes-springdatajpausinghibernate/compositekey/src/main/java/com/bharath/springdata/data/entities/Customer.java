@@ -27,7 +27,7 @@ public class Customer {
 public class Customer {
 	
 	@Id
-	private CustomerId id;
+	private int id;
 	@Id
 	private String email;
 	private String name;
