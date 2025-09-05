@@ -41,9 +41,9 @@ public class Employee {
     )
 	*/
 
+	@Id
 	@GenericGenerator(name="emp_id", strategy="com.bharath.springdata.idgenerators.CustomRandomIDGenerator")
 	@GeneratedValue(generator="emp_id")
-	@Id
 	private Long id;
 	private String name;
 
