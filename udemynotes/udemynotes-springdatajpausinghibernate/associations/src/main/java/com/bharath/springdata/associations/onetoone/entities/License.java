@@ -130,3 +130,59 @@ public class License {
 	1	CAR		2017-10-23		2017-10-23	  1	
 	---------------------------------------------------
 */
+
+
+
+
+
+/*
+ 1 Person has 1 Passport:
+- Usually, cascade is set on the owner side that manages the relationship.
+ - In the example, Person “owns” the cascade because:
+ - Deleting a Person deletes the associated Passport.
+ - In Passport (@OneToOne) you normally do NOT set cascade, unless you want operations on the child (Passport) to propagate to the parent (Person).
+ - This is rarely needed.
+ - ✅ Rule of thumb: Cascade flows from parent → child in any association ()
+
+
+| Cascade Type | Meaning / Effect                                                         | When to Use                                                                                                                                  |
+| ------------ | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ALL**      | Applies all operations (PERSIST, MERGE, REMOVE, REFRESH, DETACH)         | When you want **everything on the parent to affect the child**. Common in One-to-Many or One-to-One where child lifecycle depends on parent. |
+| **PERSIST**  | When parent is saved, child is also saved                                | Use when creating a parent also needs to save new child entities automatically.                                                              |
+| **MERGE**    | When parent is merged/updated, child is also merged                      | Use when updating a detached parent and you want changes propagated to child entities.                                                       |
+| **REMOVE**   | When parent is deleted, child is also deleted                            | Only when deleting a parent should delete its children (One-to-Many, One-to-One). Not usually for Many-to-Many.                              |
+| **REFRESH**  | When parent is refreshed from DB, child is refreshed too                 | Rarely used; ensures in-memory child state matches DB.                                                                                       |
+| **DETACH**   | When parent is detached from persistence context, child is also detached | Rarely used; useful if you’re managing detached entities and don’t want the child still attached to persistence context.                     |
+
+
+| Association  | Recommended Cascade              | orphanRemoval | Note                                        |
+| ------------ | -------------------------------- | ------------- | ------------------------------------------- |
+| One-to-One   | `CascadeType.ALL`                | ✅             | Child tied to parent’s lifecycle            |
+| One-to-Many  | `CascadeType.ALL` on parent side | ✅             | Parent manages children                     |
+| Many-to-One  | None                             | ❌             | Child shouldn’t cascade to parent           |
+| Many-to-Many | `{PERSIST, MERGE}`               | ❌             | Avoid REMOVE (would delete linked entities) |
+
+@OneToOne(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+private Passport passport;
+
+
+@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Book> books = new ArrayList<>();
+@ManyToOne
+@JoinColumn(name = "author_id")
+private Author author;
+
+
+@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+@JoinTable(
+    name = "student_course",
+    joinColumns = @JoinColumn(name = "student_id"),
+    inverseJoinColumns = @JoinColumn(name = "course_id")
+)
+private Set<Course> courses = new HashSet<>();
+
+
+The guiding principle:
+	-	If the child’s lifecycle fully depends on the parent → cascade from parent.
+	-	If the entities are more independent (many-to-many, many-to-one) → keep cascade minimal.
+ */

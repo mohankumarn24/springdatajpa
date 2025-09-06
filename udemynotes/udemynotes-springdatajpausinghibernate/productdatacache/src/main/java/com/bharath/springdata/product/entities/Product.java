@@ -114,3 +114,28 @@ Step 5: Make entities cacheable and make the entity serializable
 	import org.hibernate.annotations.CacheConcurrencyStrategy;
 	@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
  */
+
+
+ /*
+  * 
+  	1. READ_ONLY
+		-	Meaning: Entities never change (immutable).
+		-	Use case: Static lookup data.
+		-	Behavior: Cached once, reused forever. Updates throw an exception.
+
+	2. NONSTRICT_READ_WRITE
+		-	Meaning: Entities can change, but the cache doesn’t guarantee consistency.
+		-	Use case: Data that changes rarely, and you don’t mind occasional stale reads.
+		-	Behavior: Hibernate won’t aggressively synchronize cache with DB; stale data possible.		
+		-	(Might return an old title briefly after an update until cache refreshes.)
+
+	3. READ_WRITE
+		-	Meaning: Entities can change, and Hibernate tries to keep cache and DB in sync.
+		-	Use case: Frequently read entities that sometimes update.
+		-	Behavior: Cache entries are invalidated when updates happen → avoids stale data, but adds overhead.
+
+	4. TRANSACTIONAL
+		-	Meaning: Cache changes are fully transactional (requires JTA and a transactional cache provider like Infinispan).
+		-	Use case: High-end setups where cache must always match DB within a transaction.
+		-	Behavior: Cache and DB updates happen atomically. Rarely used in simple apps.		
+  */
