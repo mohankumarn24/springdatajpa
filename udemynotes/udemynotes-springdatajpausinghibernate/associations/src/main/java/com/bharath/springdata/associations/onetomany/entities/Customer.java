@@ -71,7 +71,7 @@ public class Customer {
 	);
 
 	create table phone_number(
-		id int PIRMARY KEY AUTO_INCREMENT,
+		id int PRIMARY KEY AUTO_INCREMENT,
 		customer_id int,
 		number varchar(20),
 		type varchar(20),
@@ -108,4 +108,96 @@ REMOVE	: delete
 REFRESH	: 
 DETACH	:
 ALL		: all
+*/
+
+
+/*
+-- Clean up old tables if they exist
+DROP TABLE IF EXISTS phone_number;
+DROP TABLE IF EXISTS customer;
+
+-- =====================
+-- CREATE TABLES
+-- =====================
+CREATE TABLE customer (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(20)
+);
+
+CREATE TABLE phone_number (
+    id SERIAL PRIMARY KEY,
+    customer_id INT,
+    number VARCHAR(20),
+    type VARCHAR(20),
+    FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASCADE
+);
+
+-- If you delete a customer, their numbers disappear automatically.
+
+-- =====================
+-- CREATE (Insert)
+-- =====================
+-- Insert customers
+INSERT INTO customer (name)
+VALUES ('Alice'),
+       ('Bob');
+
+-- Insert phone numbers for Alice (id = 1)
+INSERT INTO phone_number (customer_id, number, type)
+VALUES (1, '123-456-7890', 'Mobile'),
+       (1, '111-222-3333', 'Home');
+
+-- Insert phone number for Bob (id = 2)
+INSERT INTO phone_number (customer_id, number, type)
+VALUES (2, '999-888-7777', 'Work');
+
+-- =====================
+-- READ (Select)
+-- =====================
+-- Get all customers with their phone numbers
+SELECT c.id AS customer_id, c.name,
+       p.id AS phone_id, p.number, p.type
+FROM customer c
+LEFT JOIN phone_number p ON c.id = p.customer_id
+ORDER BY c.id, p.id;
+
+-- Get phone numbers for a specific customer (Alice, id = 1)
+SELECT p.id, p.number, p.type
+FROM phone_number p
+WHERE p.customer_id = 1;
+
+-- =====================
+-- UPDATE
+-- =====================
+-- Update customer name
+UPDATE customer
+SET name = 'Alice Cooper'
+WHERE id = 1;
+
+-- Update a phone number (change type)
+UPDATE phone_number
+SET type = 'Personal'
+WHERE id = 1;
+
+-- =====================
+-- DELETE
+-- =====================
+-- Delete one phone number
+DELETE FROM phone_number WHERE id = 2;
+
+-- Delete a customer (this will also delete their phone numbers due to ON DELETE CASCADE)
+DELETE FROM customer WHERE id = 1;
+
+-- =====================
+-- SUMMARY QUERY
+-- =====================
+-- Show each customer with the count of their phone numbers
+SELECT c.id AS customer_id,
+       c.name AS customer_name,
+       COUNT(p.id) AS phone_count
+FROM customer c
+LEFT JOIN phone_number p ON c.id = p.customer_id
+GROUP BY c.id, c.name
+ORDER BY phone_count DESC;
+
 */

@@ -151,12 +151,14 @@ public class ProductdataApplicationTests {
 	@Test
 	@Transactional
 	public void testCaching() {
-		Session session = entityManager.unwrap(Session.class);
+		Session session = entityManager.unwrap(Session.class);	// unwrap the JPA EntityManager to Hibernate’s native Session so you can directly manage cache behavior.
 		Product product = repository.findById(1).get();	// Entity stored in both 1st-level and 2nd-level cache.
-		repository.findById(1).get();					// no SQL (1st-level cache hit)
-		session.evict(product);							// only product entity gone from 1st-level cache, still in 2nd-level cache	
+		repository.findById(1).get();					// no SQL (1st-level cache hit) (within the same session).
+		session.evict(product);							// explicitly remove this Product instance from the first-level cache only, entity still lives in 2nd-level cache	
 														// session.clear() -> clear entire 1st level cache
 														// session.evict(product) -> clear only product element from 1st level cache
+		// session.getSessionFactory().getCache().evictEntityData(Product.class);			// clear 2nd level cache for all Product objects
+		// session.getSessionFactory().getCache().evictEntityData(Product.class, 1);		// clear 2nd level cache for Product with id 1
 		repository.findById(1).get();					// no SQL → served from 2nd-level cache
 														// Total = 1 SQL query
 	}

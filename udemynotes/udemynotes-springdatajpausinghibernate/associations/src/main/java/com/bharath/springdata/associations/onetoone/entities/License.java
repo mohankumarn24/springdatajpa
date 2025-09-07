@@ -186,3 +186,74 @@ The guiding principle:
 	-	If the child’s lifecycle fully depends on the parent → cascade from parent.
 	-	If the entities are more independent (many-to-many, many-to-one) → keep cascade minimal.
  */
+
+
+ /*
+ -- Drop tables if they already exist (for clean runs)
+DROP TABLE IF EXISTS license;
+DROP TABLE IF EXISTS person;
+
+-- Create person table
+CREATE TABLE person (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(20),
+    last_name VARCHAR(20),
+    age INT
+);
+
+-- Create license table with one-to-one relationship
+CREATE TABLE license (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(20),
+    valid_from DATE,
+    valid_to DATE,
+    person_id INT UNIQUE, -- UNIQUE enforces one-to-one
+    FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE
+);
+
+-- =====================
+-- CREATE (Insert)
+-- =====================
+-- Insert a person
+INSERT INTO person (first_name, last_name, age)
+VALUES ('Alice', 'Brown', 30);
+
+-- Insert license for that person (use currval to get last inserted id in Postgres)
+INSERT INTO license (type, valid_from, valid_to, person_id)
+VALUES ('Driver', '2025-01-01', '2030-01-01', currval(pg_get_serial_sequence('person','id')));
+
+-- =====================
+-- READ (Select)
+-- =====================
+-- Get all people with their licenses
+SELECT p.id, p.first_name, p.last_name, p.age,
+       l.id AS license_id, l.type, l.valid_from, l.valid_to
+FROM person p
+INNER JOIN license l ON p.id = l.person_id;
+
+-- Get one specific person (id = 1) with license
+SELECT p.id, p.first_name, p.last_name, p.age,
+       l.type, l.valid_from, l.valid_to
+FROM person p
+LEFT JOIN license l ON p.id = l.person_id
+WHERE p.id = 1;
+
+-- =====================
+-- UPDATE
+-- =====================
+-- Update person
+UPDATE person
+SET age = 31
+WHERE id = 1;
+
+-- Update license
+UPDATE license
+SET valid_to = '2031-01-01'
+WHERE person_id = 1;
+
+-- =====================
+-- DELETE
+-- =====================
+-- Delete person (license will auto-delete because of ON DELETE CASCADE)
+DELETE FROM person WHERE id = 1;
+*/
