@@ -184,10 +184,23 @@ public class ProductdataApplicationTests {
 		// with cache evict. 2 select queries generated
 		// entityManager is needed for cache evict
 		Session session = entityManager.unwrap(Session.class);
-		Product product = repository.findById(1).get();
-		repository.findById(1).get();
-		session.evict(product);
-		repository.findById(1).get();
+		Product product = repository.findById(1).get();				// reads value from db and also stores in L1 cache. SQL generated
+		repository.findById(1).get();								// reads from L1 cache No SQL generated
+		session.evict(product);										// remove 'product' object from L1 cache
+		repository.findById(1).get();								// reads value from db and also stores in L1 cache. SQL generated
+																	// Total = 2 SQL query generated
+
+		/*
+		 * L1 CACHE: Data in cache will be updated/deleted automatically by Hibernate in case of update/delete operation
+		 * 
+		 * L1 cache:
+		 *  - client 1 issues findById(1) -> session manager creates session1 -> create new L1 cache
+		 *  - client 2 issues findById(1) -> session manager creates session2 -> create ANOTHER new L1 cache
+		 *
+		 * L2 cache:
+		 *  - client 1 issues findById(1) -> session manager creates session1 -> create new common L2 cache
+		 *  - client 2 issues findById(1) -> session manager creates session2 -> uses already created L2 cache
+		 */
 	}
 
 	// test stored procedures

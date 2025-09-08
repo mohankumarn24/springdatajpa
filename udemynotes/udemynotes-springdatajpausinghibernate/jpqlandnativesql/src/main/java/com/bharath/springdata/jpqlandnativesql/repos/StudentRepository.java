@@ -13,9 +13,9 @@ import com.bharath.springdata.jpqlandnativesql.entities.Student;
 // JPQL: Java Persistence Query Language
 public interface StudentRepository extends CrudRepository<Student, Long> {
 
-	@Query("from Student")
+	@Query("from Student")                 // JPQL Query
 	// @Query("select st from Student st") // same as above (preferred approach)
-	List<Student> findAllStudents(Pageable pageable);
+	List<Student> findAllStudents(Pageable pageable);   // add additional parameter 'Pageable pageable' at the end on any method if we need pagination/sorting support
 
 	@Query("select st.firstName, st.lastName from Student st") // referring to Student Object. So, using field names st.firstName and st.lastName in JPQL. Case-sensitive
 	List<Object[]> findAllStudentsPartialData();
@@ -27,11 +27,11 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 	@Query("from Student where score>:min and score<:max")
 	List<Student> findStudentsForGivenScores(@Param("min") int min, @Param("max") int max);
 
-	@Modifying // use @Modifying in repo layer and @Transactional in service layer for update, delete operations
+	@Modifying // use @Modifying in repo layer and @Transactional in service layer for insert, update, delete operations
 	@Query("delete from Student where firstName=:firstName")
 	void deleteStudentsByFirstName(@Param("firstName") String firstName); // :firstName
 
-	@Query(value = "select * from student", nativeQuery = true)
+	@Query(value = "select * from student", nativeQuery = true) // native SQL query
 	List<Student> findAllStudentNQ();
 
 	@Query(value = "select * from student where fname=:firstName", nativeQuery = true) // native query. So, using actual column names fname in qeury
@@ -86,7 +86,7 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
     int updateEmployee(@Param("id") Long id, @Param("name") String name, @Param("department") String department, @Param("salary") Double salary);
 
     // --- DELETE ---
-	// Adding both @Modifying and @Transactional is mandatory for update and delete operations
+	// Adding both @Modifying and @Transactional is mandatory for insert, update and delete operations
 	//  - Add both annotations in repository class or 
 	//  - Add @Modifying in Repository layer and @Transactional in service layer (preferred)
     @Modifying

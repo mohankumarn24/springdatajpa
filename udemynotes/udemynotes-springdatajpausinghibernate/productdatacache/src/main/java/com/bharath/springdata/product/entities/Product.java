@@ -103,10 +103,13 @@ Step 3: Add ehcache.xml
 	
 Step 4: Cache Concurrency Strategy
 	- READ_ONLY				--> useful when application performs only read operations (create, update, delete not supported)
-	- NONSTRICT_READ_WRITE	--> Provides eventual consistency: 
-										Cache will be updated only when a particular transaction completely commits data to the database. 
-										If any other transaction reads cache before commit, it will get stale data
-	- READ_WRITE			--> Provides total consistency. Uses soft locks. If there is lock on cache object, then another transaction reads latest data directly from db instead of cache
+	- READ_WRITE			--> Provides total consistency. Uses soft locks.
+									- If a transaction updates data in db, cache will be locked. cache will be updated only after transaction commits data to db.
+									- At this time if any other transaction tries to read from cache (before commit by first transaction), 
+											it observes lock and then fetches data directly from db instead of reading from cache
+	- NONSTRICT_READ_WRITE	--> Provides eventual consistency: 										
+									- If a transaction updates data in db, cache will NOT be locked. cache will be updated only after transaction commits data to db.
+									- At this time if any other transaction tries to read from cache (before commit by first transaction), it reads stale data from cache
 	- TRANSACTIONAL			--> Used in XA/distributed transactions (A change in a cache which could be a commit or a rollback will happen across databases and those changes will impact the cache as well)
 	
 Step 5: Make entities cacheable and make the entity serializable
@@ -117,7 +120,7 @@ Step 5: Make entities cacheable and make the entity serializable
 
 
  /*
-  * 
+  * IGNORE
   	1. READ_ONLY
 		-	Meaning: Entities never change (immutable).
 		-	Use case: Static lookup data.

@@ -65,7 +65,9 @@ public class JpqlandnativesqlApplicationTests {
 
 	@Test
 	@Transactional
-	@Rollback(false)
+	@Rollback(false) 
+	// use '@Rollback(false)' only in Junit test cases. It means Junit should not roll back the transactions. Use with Caution!!
+	// Because, during test case execution it will delete the record. But once the test case is completed, it will rollback the deleted record and record will be visible
 	public void testDeleteStudentsByFirstName() {
 		repository.deleteStudentsByFirstName("Bill");
 	}

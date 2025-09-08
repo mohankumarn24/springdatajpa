@@ -66,6 +66,19 @@ public class Employee {
 }
 
 /*
+use mydb;
+
+create table employee(
+	id int,			
+	-- id int 	PRIMARY KEY AUTO_INCREMENT -- IDENTITY
+	name varchar(20)
+);
+
+drop table employee;
+*/
+
+
+/*
 // @TableGenerator(name = "employee_gen", table = "id_gen", pkColumnName = "gen_name", valueColumnName = "gen_val",allocationSize=100)
 // @GeneratedValue(strategy = GenerationType.TABLE,generator="employee_gen")
 // table used to generate and store the sequence

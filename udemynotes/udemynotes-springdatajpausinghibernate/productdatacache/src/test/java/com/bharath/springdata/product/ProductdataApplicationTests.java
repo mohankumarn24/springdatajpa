@@ -149,10 +149,10 @@ public class ProductdataApplicationTests {
 	}
 
 	@Test
-	@Transactional
+	@Transactional			// needed to enable caching
 	public void testCaching() {
 		Session session = entityManager.unwrap(Session.class);	// unwrap the JPA EntityManager to Hibernate’s native Session so you can directly manage cache behavior.
-		Product product = repository.findById(1).get();	// Entity stored in both 1st-level and 2nd-level cache.
+		Product product = repository.findById(1).get();	// Entity stored in both 1st-level and 2nd-level cache. SQL Generated
 		repository.findById(1).get();					// no SQL (1st-level cache hit) (within the same session).
 		session.evict(product);							// explicitly remove this Product instance from the first-level cache only, entity still lives in 2nd-level cache	
 														// session.clear() -> clear entire 1st level cache
@@ -160,7 +160,20 @@ public class ProductdataApplicationTests {
 		// session.getSessionFactory().getCache().evictEntityData(Product.class);			// clear 2nd level cache for all Product objects
 		// session.getSessionFactory().getCache().evictEntityData(Product.class, 1);		// clear 2nd level cache for Product with id 1
 		repository.findById(1).get();					// no SQL → served from 2nd-level cache
-														// Total = 1 SQL query
+														// Total = 1 SQL query generated
+
+
+		/* 
+		 * L1 CACHE: Data in cache will be updated/deleted automatically by Hibernate in case of update/delete operation
+		 * 
+		 * L1 cache:
+		 *  - client 1 issues findById(1) -> session manager creates session1 -> create new L1 cache
+		 *  - client 2 issues findById(1) -> session manager creates session2 -> create ANOTHER new L1 cache
+		 *
+		 * L2 cache:
+		 *  - client 1 issues findById(1) -> session manager creates session1 -> create new common L2 cache
+		 *  - client 2 issues findById(1) -> session manager creates session2 -> uses already created L2 cache
+		 */
 	}
 
 }
