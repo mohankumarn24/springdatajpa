@@ -38,7 +38,8 @@ public class Image {
 	}
 }
 
-/*
+/* 
+-- mysql
 use mydb;
 
 create TABLE image(
@@ -49,4 +50,11 @@ create TABLE image(
 );
 
 drop table image;
+
+create TABLE image(
+	id INT NOT NULL,
+	name varchar(100) NOT NULL,
+	data BYTEA NOT NULL,
+	PRIMARY KEY(id)
+);
 */
