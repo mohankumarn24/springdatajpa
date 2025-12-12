@@ -35,6 +35,4 @@ public class UserAccount {
 	private String country;
 	@OneToOne(mappedBy = "userAccount")
 	private Interest interest;
-
-
 }

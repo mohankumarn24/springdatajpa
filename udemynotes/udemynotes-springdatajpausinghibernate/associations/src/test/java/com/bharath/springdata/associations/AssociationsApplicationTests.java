@@ -38,6 +38,24 @@ public class AssociationsApplicationTests {
 	public void contextLoads() {
 	}
 
+	// OneToOne: create data
+	@Test
+	public void testOneToOneCreateLicense() {
+		License license = new License();
+		license.setType("CAR");
+		license.setValidFrom(new Date());
+		license.setValidTo(new Date());
+
+		Person person = new Person();
+		person.setFirstName("John");
+		person.setLastName("Clinton");
+		person.setAge(35);
+
+		license.setPerson(person);
+
+		licenseRepository.save(license);
+	}
+
 	// OneToMany: save new data
 	@Test
 	public void testCreateCustomer() {
@@ -134,23 +152,4 @@ public class AssociationsApplicationTests {
 		System.out.println(programmer);					// Programmer [id=1, name=John, sal=10000]
 		System.out.println(programmer.getProjects());	// Project [id=1, name=Hibernate Project]
 	}
-
-	// OneToOne: create data
-	@Test
-	public void testOneToOneCreateLicense() {
-		License license = new License();
-		license.setType("CAR");
-		license.setValidFrom(new Date());
-		license.setValidTo(new Date());
-
-		Person person = new Person();
-		person.setFirstName("John");
-		person.setLastName("Clinton");
-		person.setAge(35);
-
-		license.setPerson(person);
-
-		licenseRepository.save(license);
-	}
-
 }

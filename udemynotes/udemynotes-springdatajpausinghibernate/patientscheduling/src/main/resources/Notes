@@ -12,55 +12,101 @@ Patient to Doctor: @ManyToMany
 patients_doctors: join table for Patient to Doctor @ManyToMany relationship
 
 
-SQL:
----
-use mydb;
+SQL (PostgreSQL):
+---------------
 
-drop table patients_doctors;
-drop table appointment;
-drop table patient;
-drop table doctor;
+DROP TABLE IF EXISTS patients_doctors;
+DROP TABLE IF EXISTS appointment;
+DROP TABLE IF EXISTS patient;
+DROP TABLE IF EXISTS doctor;
 
-create table patient(
-    id int PRIMARY KEY AUTO_INCREMENT,
-    first_name varchar(20),
-    last_name varchar(30),
-    phone varchar(30),
-    provider_name varchar(30),
-    copay decimal(10,5)
+CREATE TABLE patient (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(20),
+    last_name VARCHAR(30),
+    phone VARCHAR(30),
+    provider_name VARCHAR(30),
+    copay NUMERIC(10,5)
 );
 
-create table doctor(
-    id int PRIMARY KEY AUTO_INCREMENT,
-    first_name varchar(20),
-    last_name varchar(30),
-    speciality varchar(30)
+CREATE TABLE doctor (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(20),
+    last_name VARCHAR(30),
+    speciality VARCHAR(30)
 );
 
-create table patients_doctors(
-    patient_id int,
-    doctor_id int,
-    FOREIGN KEY (patient_id)
-    REFERENCES patient(id),
-    FOREIGN KEY (doctor_id)
-    REFERENCES doctor(id)
+CREATE TABLE patients_doctors (
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    FOREIGN KEY (patient_id) REFERENCES patient(id),
+    FOREIGN KEY (doctor_id) REFERENCES doctor(id)
 );
 
-create table appointment(
-    id int PRIMARY KEY AUTO_INCREMENT,
-    patient_id int,
-    doctor_id int,
-    appointment_time datetime,
-    started TINYINT(1),
-    ended TINYINT(1),
-    reason varchar(200),
-    FOREIGN KEY (patient_id)
-    REFERENCES patient(id),
-    FOREIGN KEY (doctor_id)
-    REFERENCES doctor(id)
+CREATE TABLE appointment (
+    id SERIAL PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    appointment_time TIMESTAMP,
+    started BOOLEAN,
+    ended BOOLEAN,
+    reason VARCHAR(200),
+    FOREIGN KEY (patient_id) REFERENCES patient(id),
+    FOREIGN KEY (doctor_id) REFERENCES doctor(id)
 );
 
-select * from patient;
-select * from doctor;
-select * from appointment;
-select * from patients_doctors;
+SELECT * FROM patient;
+SELECT * FROM doctor;
+SELECT * FROM appointment;
+SELECT * FROM patients_doctors;
+
+--------------------------------
+-- Insert Patients
+INSERT INTO patient (first_name, last_name, phone, provider_name, copay)
+VALUES 
+('John', 'Doe', '1234567890', 'Aetna', 20.00),
+('Mary', 'Smith', '9876543210', 'BlueCross', 15.50),
+('Robert', 'Brown', '5551234567', 'UnitedHealth', 30.00);
+
+-- Insert Doctors
+INSERT INTO doctor (first_name, last_name, speciality)
+VALUES
+('Alice', 'Johnson', 'Cardiology'),
+('David', 'Miller', 'Dermatology'),
+('Sarah', 'Wilson', 'Neurology');
+
+-- Map Patients to Doctors (Many-to-Many)
+INSERT INTO patients_doctors (patient_id, doctor_id)
+VALUES
+(1, 1),   -- John → Alice (Cardiology)
+(1, 2),   -- John → David (Dermatology)
+(2, 1),   -- Mary → Alice
+(3, 3);   -- Robert → Sarah (Neurology)
+
+-- Insert Appointments
+INSERT INTO appointment (patient_id, doctor_id, appointment_time, started, ended, reason)
+VALUES
+(1, 1, '2024-12-01 10:00:00', TRUE, FALSE, 'Chest pain consultation'),
+(1, 2, '2024-12-03 14:30:00', FALSE, FALSE, 'Skin rash check'),
+(2, 1, '2024-12-05 09:15:00', TRUE, TRUE, 'Routine heart checkup'),
+(3, 3, '2024-12-10 16:00:00', FALSE, FALSE, 'Migraine evaluation');
+
+
+--------------------------------
+Doctors:
+Alice Johnson (Cardiology)
+David Miller (Dermatology)
+Sarah Wilson (Neurology)
+
+Patients:
+John Doe
+Mary Smith
+Robert Brown
+
+Patient–Doctor Mapping
+John    -> Alice, David
+Mary    -> Alice
+Robert  -> Sarah
+
+Appointments:
+Includes mix of started/ended states

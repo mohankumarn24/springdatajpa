@@ -116,14 +116,14 @@ public class License {
 	select * from license;
 
 3. Sample data:
-	license:
+	person:
 	-------------------------------
 	id	first_name	last_name	age
 	-------------------------------
 	1	John		Clinton		35
 	-------------------------------
 
-	person:
+	license:
 	---------------------------------------------------
 	id	type	valid_from		valid_to	  person_id
 	---------------------------------------------------

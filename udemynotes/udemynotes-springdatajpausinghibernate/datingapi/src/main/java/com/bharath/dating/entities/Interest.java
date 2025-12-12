@@ -35,6 +35,4 @@ public class Interest {
 	@JoinColumn(name = "user_id")
 	@JsonIgnore
 	private UserAccount userAccount;
-
-
 }

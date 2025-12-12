@@ -20,11 +20,11 @@ public class Doctor {
 	private String lastName;
 	private String speciality;
 
-	@ManyToMany(mappedBy = "doctors")
-	private List<Patient> patients;
-
 	@OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
 	private List<Appointment> appointments;
+
+	@ManyToMany(mappedBy = "doctors")
+	private List<Patient> patients;
 
 	public Long getId() {
 		return id;
