@@ -177,3 +177,149 @@ public class ProductdataApplicationTests {
 	}
 
 }
+
+
+/*
+/*
+ * ============================================================
+ * ENTITY MANAGER - DETACH (JPA L1 CACHE CONTROL)
+ * ============================================================
+ *
+ * Definition:
+ * -----------
+ * entityManager.detach(entity)
+ *
+ * - Removes a specific entity from the Persistence Context (L1 cache)
+ * - Entity transitions from MANAGED -> DETACHED state
+ *
+ *
+ * ============================================================
+ * WHY DETACH?
+ * ============================================================
+ *
+ * 1. Avoid dirty checking (prevent auto updates)
+ * 2. Force fresh DB reads (bypass L1 cache)
+ * 3. Reduce memory usage (large batch processing)
+ *
+ *
+ * ============================================================
+ * BASIC EXAMPLE
+ * ============================================================
+ *
+ * @Transactional
+ * public void example() {
+ *
+ *     User user = repo.findById(1L).get();
+ *     // -> DB HIT
+ *
+ *     entityManager.detach(user);
+ *
+ *     user.setName("Mohan");
+ *     // -> NOT tracked
+ *     // -> NO update query will be executed
+ *
+ *     repo.findById(1L);
+ *     // -> DB HIT again (entity not in L1 cache)
+ * }
+ *
+ *
+ * ============================================================
+ * DIRTY CHECKING BEHAVIOR
+ * ============================================================
+ *
+ * // Without detach
+ *
+ * @Transactional
+ * public void updateUser() {
+ *     User user = repo.findById(1L).get();
+ *     user.setName("Mohan");
+ *     // -> UPDATE query executed at transaction commit
+ * }
+ *
+ *
+ * // With detach
+ *
+ * @Transactional
+ * public void updateUser() {
+ *     User user = repo.findById(1L).get();
+ *
+ *     entityManager.detach(user);
+ *
+ *     user.setName("Mohan");
+ *     // -> NO update query (detached entity)
+ * }
+ *
+ *
+ * ============================================================
+ * REATTACHING ENTITY (MERGE)
+ * ============================================================
+ *
+ * @Transactional
+ * public void mergeExample() {
+ *
+ *     User user = repo.findById(1L).get();
+ *
+ *     entityManager.detach(user);
+ *
+ *     user.setName("Mohan");
+ *
+ *     entityManager.merge(user);
+ *     // -> Copies state into managed entity
+ *     // -> UPDATE will be executed at commit
+ * }
+ *
+ *
+ * ============================================================
+ * DETACH VS CLEAR
+ * ============================================================
+ *
+ * entityManager.detach(entity)
+ * - Removes ONLY one entity
+ *
+ * entityManager.clear()
+ * - Removes ALL entities from persistence context
+ *
+ *
+ * ============================================================
+ * REAL-WORLD USE CASE (BATCH PROCESSING)
+ * ============================================================
+ *
+ * @Transactional
+ * public void processBulk(List<User> users) {
+ *
+ *     int i = 0;
+ *
+ *     for (User user : users) {
+ *
+ *         user.setName("Updated");
+ *
+ *         if (i % 50 == 0) {
+ *             entityManager.flush();  // push changes to DB
+ *             entityManager.clear();  // clear L1 cache (avoid memory issues)
+ *         }
+ *
+ *         i++;
+ *     }
+ * }
+ *
+ *
+ * ============================================================
+ * IMPORTANT NOTES
+ * ============================================================
+ *
+ * - Detached entity is NOT tracked by JPA
+ * - Changes are NOT persisted automatically
+ * - Must use merge() to reattach
+ * - Next fetch of same entity -> DB hit
+ *
+ *
+ * ============================================================
+ * INTERVIEW ONE-LINER
+ * ============================================================
+ *
+ * "detach() removes an entity from the persistence context,
+ * disabling dirty checking and forcing subsequent loads
+ * to hit the database."
+ *
+ * ============================================================
+ */
