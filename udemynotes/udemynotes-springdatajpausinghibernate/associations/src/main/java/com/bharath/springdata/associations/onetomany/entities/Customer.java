@@ -23,6 +23,10 @@ public class Customer {
 	// CascadeType.ALL: whatever operation we do on Customer table, same must be cascaded/propogated to phone_number table as well
 	// Default is LAZY. we must add @Transactional for LAZY loading
 
+	// NOTE:
+	//  - Adding @Transactional(readOnly = true) at the service layer extends the transaction across the entire method, allowing lazy loading to work
+	//  - For read-only operations involving lazy-loaded associations, @Transactional(readOnly = true) is usually the appropriate choice rather than plain @Transactional
+
 	public long getId() {
 		return id;
 	}
