@@ -1,0 +1,373 @@
+/******************************************************************************
+ * JPA RELATIONSHIPS - QUICK REFERENCE
+ ******************************************************************************/
+
+/*
+===============================================================================
+1. BUSINESS PARENT vs JPA OWNING SIDE
+===============================================================================
+
+These are NOT the same.
+
+Business Parent
+---------------
+Real-world relationship.
+
+Example:
+
+Department
+    |
+    +---- Alice
+    +---- Bob
+    +---- Charlie
+
+Department is the business parent.
+Employees are business children.
+
+JPA Owning Side
+---------------
+Entity containing @JoinColumn.
+
+Rule:
+
+@JoinColumn  ==> Owning Side
+mappedBy     ==> Inverse Side
+
+Owning side updates the foreign key.
+*/
+
+
+/*
+===============================================================================
+2. @OneToOne
+===============================================================================
+
+Foreign key can exist in EITHER table.
+
+Example 1
+
+Person
+-------
+id   name   passport_id
+1    Mohan      100
+
+Passport
+--------
+id   number
+100  TN123456
+
+Person owns the relationship
+(Person contains @JoinColumn)
+
+
+---------------------------------------------------
+
+Example 2
+
+Person
+-------
+id   name
+1    Mohan
+
+Passport
+--------
+id   number     person_id
+100  TN123456       1
+
+Passport owns the relationship
+(Passport contains @JoinColumn)
+
+
+Rule:
+Either entity can own a OneToOne relationship.
+*/
+
+
+/*
+===============================================================================
+3. @OneToMany / @ManyToOne
+===============================================================================
+
+Database
+
+Department
+----------
+id   name
+1    IT
+
+Employee
+--------
+id   name      department_id
+1    Alice          1
+2    Bob            1
+3    Charlie        1
+
+
+Business Parent
+---------------
+Department
+
+Business Child
+--------------
+Employee
+
+JPA Owning Side
+---------------
+Employee
+(because Employee has @JoinColumn)
+
+Inverse Side
+------------
+Department
+(because Department has mappedBy)
+
+
+Typical Mapping
+
+@Entity
+class Department {
+
+    @OneToMany(
+        mappedBy = "department",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    List<Employee> employees;
+}
+
+@Entity
+class Employee {
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    Department department;
+}
+*/
+
+
+/*
+===============================================================================
+4. CASCADE
+===============================================================================
+
+Cascade direction depends ONLY on where cascade is written.
+
+@OneToMany(cascade = CascadeType.ALL)
+
+Department -------------> Employee
+
+Example
+
+Department
+----------
+1 IT
+
+Employees
+---------
+Alice
+Bob
+Charlie
+
+departmentRepository.save(department)
+
+Result
+
+INSERT Department
+INSERT Alice
+INSERT Bob
+INSERT Charlie
+
+
+departmentRepository.delete(department)
+
+Result
+
+DELETE Alice
+DELETE Bob
+DELETE Charlie
+DELETE Department
+
+Cascade does NOT determine the owning side.
+*/
+
+
+/*
+===============================================================================
+5. ORPHAN REMOVAL
+===============================================================================
+
+Department
+
+IT
+├── Alice
+├── Bob
+└── Charlie
+
+Java
+
+department.getEmployees().remove(bob);
+
+With orphanRemoval = true
+
+Database becomes
+
+IT
+├── Alice
+└── Charlie
+
+Bob is deleted from Employee table.
+
+Hibernate executes
+
+DELETE FROM employee
+WHERE id = Bob
+
+
+Difference
+
+Cascade REMOVE
+
+Delete Department
+
+Result
+
+Department deleted
+All Employees deleted
+
+
+Orphan Removal
+
+Department still exists
+
+Only Bob removed
+
+Result
+
+IT
+├── Alice
+└── Charlie
+*/
+
+
+/*
+===============================================================================
+6. DATABASE FOREIGN KEY
+===============================================================================
+
+Department
+----------
+id
+1
+
+Employee
+--------
+id   name     department_id
+1    Alice        1
+2    Bob          1
+
+Employee contains department_id.
+
+Therefore
+
+Employee is the JPA owning side.
+
+Owning side updates department_id.
+*/
+
+
+/*
+===============================================================================
+7. DATABASE ON DELETE CASCADE
+===============================================================================
+
+FOREIGN KEY(department_id)
+REFERENCES department(id)
+ON DELETE CASCADE
+
+Database
+
+Department
+----------
+1 IT
+
+Employee
+--------
+Alice
+Bob
+
+Execute
+
+DELETE FROM department WHERE id=1;
+
+Database automatically deletes
+
+Alice
+Bob
+
+This is DATABASE Cascade.
+
+It is NOT the same as
+
+CascadeType.ALL
+
+which is handled by Hibernate.
+*/
+
+
+/*
+===============================================================================
+8. MEMORY TRICKS
+===============================================================================
+
+Business Parent
+    -> Real-world ownership
+
+@JoinColumn
+    -> JPA Owning Side
+
+mappedBy
+    -> Inverse Side
+
+cascade
+    -> Operation propagation direction
+
+orphanRemoval
+    -> Delete child removed from parent's collection
+
+ON DELETE CASCADE
+    -> Database performs delete
+
+CascadeType.ALL
+    -> Hibernate performs delete
+*/
+
+
+/*
+===============================================================================
+9. INTERVIEW RULES
+===============================================================================
+
+@OneToOne
+    Either side can own.
+
+@ManyToOne
+    Usually owning side.
+
+@OneToMany
+    Usually inverse side.
+
+@JoinColumn
+    Owning side.
+
+mappedBy
+    Inverse side.
+
+Remember
+
+Business Parent != JPA Owning Side
+
+Business Parent = Real-world ownership.
+
+JPA Owning Side = Entity managing the foreign key.
+===============================================================================
+*/
